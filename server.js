@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-
+const { errorLogger, responseTimeLogger } = require('./middleware/errorLogger');
 const FRONTEND_ORIGIN =  "http://localhost:3000";
 
 const helmet = require('helmet');
@@ -143,7 +143,8 @@ if (swaggerDocument && swaggerDocument.externalDocs) {
 	delete swaggerDocument.externalDocs;
 }
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
+// Response time monitoring
+app.use(responseTimeLogger);
 // JSON & URL parser
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -159,19 +160,26 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/signup", require("./routes/signup"));
 
 // Error handler
+app.use(errorLogger);
+
+// Final error handler
 app.use((err, req, res, next) => {
-    if (err) {
-        res.status(400).json({ error: err.message });
-    } else {
-        next();
-    }
+    const status = err.status || 500;
+    const message = process.env.NODE_ENV === 'production' 
+        ? 'Internal Server Error' 
+        : err.message;
+        
+    res.status(status).json({
+        success: false,
+        error: message,
+        timestamp: new Date().toISOString()
+    });
 });
 
 // Global error handler
-app.use((err, req, res, next) => {
-	console.error("Unhandled error:", err);
-	res.status(500).json({ error: "Internal server error" });
-});
+const { uncaughtExceptionHandler, unhandledRejectionHandler } = require('./middleware/errorLogger');
+process.on('uncaughtException', uncaughtExceptionHandler);
+process.on('unhandledRejection', unhandledRejectionHandler);
 
 // Start server
 app.listen(port, async () => {
