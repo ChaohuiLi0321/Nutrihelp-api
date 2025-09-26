@@ -135,6 +135,22 @@ dist
 .vscode
 .idea
 
+# Ignore virtualenvs and caches inside Vulnerability_Tool_V2
+/Vulnerability_Tool_V2/.venv/
+/Vulnerability_Tool_V2/venv/
+/Vulnerability_Tool_V2/__pycache__/
+/Vulnerability_Tool_V2/.pytest_cache/
+/Vulnerability_Tool_V2/.cache/
+
+# General Python ignores
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore generated security assessment reports
+/security/reports/
+```
+
 # Python virtual environments
 venv/
 .env/
@@ -163,8 +179,7 @@ Pipfile.lock
 # Vulnerability Scanner V2 reports - generated artifacts
 Vulnerability_Tool_V2/reports/
 Vulnerability_Tool_V2/reports/*
-
-
+=========
 # Ignore virtualenvs and caches inside Vulnerability_Tool_V2
 /Vulnerability_Tool_V2/.venv/
 /Vulnerability_Tool_V2/venv/
@@ -180,3 +195,4 @@ __pycache__/
 # Ignore generated security assessment reports
 /security/reports/
 ```
+>>>>>>>>> Temporary merge branch 2
